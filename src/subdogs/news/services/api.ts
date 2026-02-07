@@ -1,0 +1,205 @@
+import type { NewsResponse, NewsFilters } from '../types';
+
+const API_KEY = import.meta.env.VITE_NEWSDATA_API_KEY || '';
+const BASE_URL = 'https://newsdata.io/api/1';
+
+// Mock data for development when no API key is available
+const mockNewsResponse: NewsResponse = {
+  status: 'success',
+  totalResults: 6,
+  results: [
+    {
+      article_id: 'mock-1',
+      title: 'Sample News Article: Technology Breakthrough',
+      link: '#',
+      keywords: ['technology', 'innovation'],
+      creator: ['Tech Reporter'],
+      video_url: null,
+      description: 'This is a sample article to demonstrate the news layout. Add your API key to see real news.',
+      content: 'Sample content for demonstration purposes.',
+      pubDate: new Date().toISOString(),
+      pubDateTZ: 'UTC',
+      image_url: undefined,
+      source_id: 'sample-source',
+      source_priority: 1,
+      source_name: 'Sample News Source',
+      source_url: '#',
+      source_icon: null,
+      language: 'en',
+      country: ['us'],
+      category: ['technology'],
+      ai_tag: 'technology',
+      sentiment: 'positive',
+      sentiment_stats: null,
+      ai_region: 'northamerica',
+      ai_org: null,
+      duplicate: false,
+    },
+    {
+      article_id: 'mock-2',
+      title: 'Global Markets Update: Economic Trends',
+      link: '#',
+      keywords: ['business', 'economy'],
+      creator: ['Business Analyst'],
+      video_url: null,
+      description: 'Another sample article showing the business category layout and styling.',
+      content: 'Sample business content.',
+      pubDate: new Date(Date.now() - 3600000).toISOString(),
+      pubDateTZ: 'UTC',
+      image_url: undefined,
+      source_id: 'sample-source-2',
+      source_priority: 2,
+      source_name: 'Business Daily',
+      source_url: '#',
+      source_icon: null,
+      language: 'en',
+      country: ['us'],
+      category: ['business'],
+      ai_tag: 'business',
+      sentiment: 'neutral',
+      sentiment_stats: null,
+      ai_region: 'northamerica',
+      ai_org: null,
+      duplicate: false,
+    },
+    {
+      article_id: 'mock-3',
+      title: 'Sports Highlights: Championship Finals',
+      link: '#',
+      keywords: ['sports', 'championship'],
+      creator: ['Sports Journalist'],
+      video_url: null,
+      description: 'Sample sports article demonstrating the sports category.',
+      content: 'Sample sports content.',
+      pubDate: new Date(Date.now() - 7200000).toISOString(),
+      pubDateTZ: 'UTC',
+      image_url: undefined,
+      source_id: 'sample-source-3',
+      source_priority: 3,
+      source_name: 'Sports Central',
+      source_url: '#',
+      source_icon: null,
+      language: 'en',
+      country: ['us'],
+      category: ['sports'],
+      ai_tag: 'sports',
+      sentiment: 'positive',
+      sentiment_stats: null,
+      ai_region: 'northamerica',
+      ai_org: null,
+      duplicate: false,
+    },
+    {
+      article_id: 'mock-4',
+      title: 'Health & Wellness: New Research Findings',
+      link: '#',
+      keywords: ['health', 'research'],
+      creator: ['Health Editor'],
+      video_url: null,
+      description: 'Sample health article showing medical and wellness news layout.',
+      content: 'Sample health content.',
+      pubDate: new Date(Date.now() - 10800000).toISOString(),
+      pubDateTZ: 'UTC',
+      image_url: undefined,
+      source_id: 'sample-source-4',
+      source_priority: 4,
+      source_name: 'Health Today',
+      source_url: '#',
+      source_icon: null,
+      language: 'en',
+      country: ['us'],
+      category: ['health'],
+      ai_tag: 'health',
+      sentiment: 'positive',
+      sentiment_stats: null,
+      ai_region: 'northamerica',
+      ai_org: null,
+      duplicate: false,
+    },
+    {
+      article_id: 'mock-5',
+      title: 'Science Discovery: Space Exploration',
+      link: '#',
+      keywords: ['science', 'space'],
+      creator: ['Science Writer'],
+      video_url: null,
+      description: 'Sample science article demonstrating scientific news presentation.',
+      content: 'Sample science content.',
+      pubDate: new Date(Date.now() - 14400000).toISOString(),
+      pubDateTZ: 'UTC',
+      image_url: undefined,
+      source_id: 'sample-source-5',
+      source_priority: 5,
+      source_name: 'Science Weekly',
+      source_url: '#',
+      source_icon: null,
+      language: 'en',
+      country: ['us'],
+      category: ['science'],
+      ai_tag: 'science',
+      sentiment: 'positive',
+      sentiment_stats: null,
+      ai_region: 'northamerica',
+      ai_org: null,
+      duplicate: false,
+    },
+    {
+      article_id: 'mock-6',
+      title: 'Entertainment News: Film Industry Updates',
+      link: '#',
+      keywords: ['entertainment', 'movies'],
+      creator: ['Entertainment Reporter'],
+      video_url: null,
+      description: 'Sample entertainment article showing media and entertainment news.',
+      content: 'Sample entertainment content.',
+      pubDate: new Date(Date.now() - 18000000).toISOString(),
+      pubDateTZ: 'UTC',
+      image_url: undefined,
+      source_id: 'sample-source-6',
+      source_priority: 6,
+      source_name: 'Entertainment Tonight',
+      source_url: '#',
+      source_icon: null,
+      language: 'en',
+      country: ['us'],
+      category: ['entertainment'],
+      ai_tag: 'entertainment',
+      sentiment: 'neutral',
+      sentiment_stats: null,
+      ai_region: 'northamerica',
+      ai_org: null,
+      duplicate: false,
+    },
+  ],
+  nextPage: null,
+};
+
+export async function fetchNews(filters: NewsFilters = {}): Promise<NewsResponse> {
+  // Return mock data if no API key is set
+  if (!API_KEY) {
+    console.log('No API key found. Using mock data. Add VITE_NEWSDATA_API_KEY to your .env file.');
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return mockNewsResponse;
+  }
+
+  const params = new URLSearchParams({
+    apikey: API_KEY,
+    language: 'en',
+    ...filters.category && filters.category !== 'top' && { category: filters.category },
+    ...filters.query && { q: filters.query },
+    ...filters.country && { country: filters.country },
+  });
+
+  const response = await fetch(`${BASE_URL}/news?${params}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch news: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export async function fetchLatestNews(): Promise<NewsResponse> {
+  return fetchNews({ category: 'top' });
+}
