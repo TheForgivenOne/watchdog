@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'react-router';
-import { Home, Newspaper, Cloud, Settings } from 'lucide-react';
+import { Home, Newspaper, Cloud, Settings, Menu } from 'lucide-react';
 import { useState } from 'react';
 import { subdogs } from '../utils/subdogs';
 import { SettingsModal } from './settings/SettingsModal';
+import { MobileDrawer } from './MobileDrawer';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Home,
@@ -13,6 +14,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export function Navigation() {
   const location = useLocation();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -31,7 +33,17 @@ export function Navigation() {
               <span className="text-white font-semibold text-lg">Watchdog</span>
             </Link>
 
-            <div className="flex items-center space-x-1">
+            {/* Mobile hamburger button */}
+            <button
+              onClick={() => setIsDrawerOpen(true)}
+              className="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              aria-label="Open menu"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+
+            {/* Desktop navigation */}
+            <div className="hidden md:flex items-center space-x-1">
               <Link
                 to="/"
                 className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -80,6 +92,7 @@ export function Navigation() {
       </nav>
 
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
     </>
   );
 }

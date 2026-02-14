@@ -78,8 +78,9 @@ export function SettingsPage() {
         <h1 className="text-3xl font-bold text-white">Settings</h1>
       </div>
 
-      {/* Navigation */}
-      <div className="flex gap-1 mb-8 bg-slate-800/50 p-1 rounded-lg">
+      {/* Navigation - scrollable on mobile */}
+      <div className="overflow-x-auto mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex gap-1 bg-slate-800/50 p-1 rounded-lg min-w-max">
         {[
           { id: 'general', label: 'General', icon: Settings },
           { id: 'widgets', label: 'Widgets', icon: Layout },
@@ -90,7 +91,7 @@ export function SettingsPage() {
             <button
               key={section.id}
               onClick={() => setActiveSection(section.id as typeof activeSection)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap ${
                 activeSection === section.id
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-white hover:bg-slate-700'
@@ -101,6 +102,7 @@ export function SettingsPage() {
             </button>
           );
         })}
+        </div>
       </div>
 
       {/* Content */}

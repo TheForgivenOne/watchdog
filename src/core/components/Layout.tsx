@@ -1,5 +1,6 @@
 import { Suspense, type ReactNode } from 'react';
 import { Navigation } from './Navigation';
+import { BottomNav } from './BottomNav';
 import { LoadingSpinner } from './LoadingSpinner';
 
 interface LayoutProps {
@@ -10,11 +11,12 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navigation />
-      <main className="pt-16">
+      <main className="pt-16 pb-20 md:pb-0">
         <Suspense fallback={<LoadingSpinner />}>
           {children}
         </Suspense>
       </main>
+      <BottomNav />
     </div>
   );
 }
