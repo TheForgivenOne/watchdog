@@ -29,9 +29,9 @@ npm install --save-dev @testing-library/react @testing-library/react-hooks @test
 ```
 
 ### Test Framework
-- Current tests exist in `testCache.ts` using Jest and React Testing Library
+- Tests use Jest and React Testing Library
 - Includes tests for caching functionality with mocked Convex API calls
-- Uses `@testing-library/react-hooks` for testing custom hooks
+- Use `@testing-library/jest-dom` for DOM assertions
 
 ### Running Tests
 ```bash
@@ -79,12 +79,11 @@ npx jest --coverage
 - Use lazy imports for code splitting when appropriate
 
 ### Formatting
-- Use Prettier for consistent formatting (configuration in `postcss.config.js`)
-- Follow 2-space indentation
-- Use semicolons consistently
-- Use single quotes for strings where possible
+- Follow 2-space indentation (Vite/ESLint default)
+- Use single quotes for strings
 - Arrow functions preferred for functional components
-- Use explicit export default for React components
+- Use named exports for React components (e.g., `export function Layout`)
+- Use `type` keyword for type-only imports (e.g., `import { type ReactNode }`)
 
 ### TypeScript Usage
 - Strict TypeScript mode is enabled (`strict: true` in tsconfig)
