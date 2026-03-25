@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useQuery as useConvexQuery, useMutation as useConvexMutation } from 'convex/react';
 import type { NewsFilters, NewsResponse } from '../types';
-import { fetchNews } from '../services/api';
 import { api } from '../../../../convex/_generated/api';
 import { useEffect } from 'react';
 
@@ -16,7 +15,7 @@ interface CachedNewsData {
   page?: number;
   status: string;
   totalResults: number;
-  results: any[];
+  results: unknown[];
   nextPage?: string;
   fetchedAt: number;
   expiresAt: number;
@@ -25,7 +24,7 @@ interface CachedNewsData {
 
 /**
  * Hook to fetch news with caching support
- * First checks Convex cache, falls back to API if needed
+ * First checks Convex cache, falls back to API via server-side proxy if needed
  */
 export function useCachedNews(filters: NewsFilters = {}, userId?: string) {
   // Check cache first using Convex
@@ -43,17 +42,24 @@ export function useCachedNews(filters: NewsFilters = {}, userId?: string) {
 
   // Mutation to store data in cache
   const cacheNewsMutation = useConvexMutation(api.cache.cacheNews);
+  
+  // Mutation to fetch news via server-side proxy (API key is secure on server)
+  const fetchNewsMutation = useConvexMutation(api.newsProxy.fetchNews);
 
   // Determine if we should use cache or fetch fresh
-  const hasValidCache = cachedData && !(cachedData as CachedNewsData).isStale;
   const hasCache = !!cachedData;
 
-  // Main query that uses cache or fetches from API
+  // Main query that uses cache or fetches from API via server proxy
   const { data, error, refetch } = useQuery<NewsResponse, Error>({
     queryKey: [NEWS_CACHE_KEY, filters, userId],
     queryFn: async () => {
-      console.log('[News Cache] Fetching from API');
-      const response = await fetchNews(filters);
+      console.log('[News Cache] Fetching from API via server proxy');
+      const response = await fetchNewsMutation({
+        category: filters.category,
+        query: filters.query,
+        country: filters.country,
+        language: filters.language,
+      });
 
       // Store in cache (don't await to avoid blocking)
       cacheNewsMutation({
@@ -82,21 +88,22 @@ export function useCachedNews(filters: NewsFilters = {}, userId?: string) {
           nextPage: (cachedData as CachedNewsData).nextPage,
         } as NewsResponse)
       : undefined,
-    // Cache-first: only run query if no valid cache
-    enabled: !hasValidCache,
+    // Always allow fetching - API calls happen via secure server proxy
+    enabled: true,
     staleTime: 60 * 60 * 1000, // 1 hour
     gcTime: 60 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
 
-  // Background refresh when data is stale (only if we have cache)
+  // Background refresh when data is stale
+  const isDataStale = (cachedData as CachedNewsData | undefined)?.isStale;
   useEffect(() => {
-    if ((cachedData as CachedNewsData | undefined)?.isStale) {
+    if (isDataStale) {
       console.log('[News Cache] Data is stale, refreshing in background');
       refetch();
     }
-  }, [(cachedData as CachedNewsData | undefined)?.isStale, refetch]);
+  }, [isDataStale, refetch, cachedData]);
 
   return {
     data,

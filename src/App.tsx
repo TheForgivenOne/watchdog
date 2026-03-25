@@ -10,6 +10,7 @@ import { NotFound } from './core/pages/NotFound';
 // Lazy load subdogs for code splitting
 const NewsRoutes = lazy(() => import('./subdogs/news/routes'));
 const WeatherRoutes = lazy(() => import('./subdogs/weather/routes'));
+const AiAgentRoutes = lazy(() => import('./subdogs/ai-agent/routes'));
 const TestCache = lazy(() => import('./pages/TestCache'));
 
 function App() {
@@ -38,6 +39,14 @@ function App() {
             element={
               <Suspense fallback={<LoadingSpinner />}>
                 <WeatherRoutes />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/ai-agent/*"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <AiAgentRoutes />
               </Suspense>
             }
           />

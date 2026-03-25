@@ -8,9 +8,11 @@
  * @module
  */
 
+import type * as aiAgent from "../aiAgent.js";
 import type * as bookmarks from "../bookmarks.js";
 import type * as cache from "../cache.js";
 import type * as cacheWeather from "../cacheWeather.js";
+import type * as newsProxy from "../newsProxy.js";
 import type * as recentArticles from "../recentArticles.js";
 import type * as recentLocations from "../recentLocations.js";
 import type * as savedLocations from "../savedLocations.js";
@@ -23,9 +25,11 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  aiAgent: typeof aiAgent;
   bookmarks: typeof bookmarks;
   cache: typeof cache;
   cacheWeather: typeof cacheWeather;
+  newsProxy: typeof newsProxy;
   recentArticles: typeof recentArticles;
   recentLocations: typeof recentLocations;
   savedLocations: typeof savedLocations;

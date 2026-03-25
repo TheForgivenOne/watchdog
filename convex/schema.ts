@@ -177,4 +177,30 @@ export default defineSchema({
     .index("by_user_category", ["userId", "category"])
     .index("by_pub_date", ["pubDate"])
     .index("by_user_date", ["userId", "archivedAt"]),
+
+  // ==================== AI AGENT TABLES ====================
+
+  // AI conversation sessions
+  aiConversations: defineTable({
+    userId: v.optional(v.string()),
+    title: v.string(),
+    preview: v.string(),
+    messageCount: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_updated", ["userId", "updatedAt"]),
+
+  // AI conversation messages
+  aiMessages: defineTable({
+    conversationId: v.id("aiConversations"),
+    role: v.string(),
+    content: v.string(),
+    toolName: v.optional(v.string()),
+    toolResult: v.optional(v.string()),
+    timestamp: v.number(),
+  })
+    .index("by_conversation", ["conversationId"])
+    .index("by_conversation_time", ["conversationId", "timestamp"]),
 });

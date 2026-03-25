@@ -16,5 +16,13 @@ export const subdogs: Subdog[] = [
     path: '/weather',
     icon: 'Cloud',
     color: 'sky'
+  },
+  {
+    id: 'ai-agent',
+    name: 'AI Agent',
+    description: 'Your personal AI assistant for accessing dashboard data',
+    path: '/ai-agent',
+    icon: 'Robot',
+    color: 'violet'
   }
 ];

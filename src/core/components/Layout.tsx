@@ -2,6 +2,7 @@ import { Suspense, type ReactNode } from 'react';
 import { Navigation } from './Navigation';
 import { BottomNav } from './BottomNav';
 import { LoadingSpinner } from './LoadingSpinner';
+import { AiAgent } from '../../subdogs/ai-agent/components/AiAgent';
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,6 +18,7 @@ export function Layout({ children }: LayoutProps) {
         </Suspense>
       </main>
       <BottomNav />
+      <AiAgent />
     </div>
   );
 }

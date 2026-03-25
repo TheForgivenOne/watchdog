@@ -18,6 +18,9 @@ export function NewsHome() {
 
   const isError = !!error;
 
+  // Check if data is mock data (contains 'mock-' in article_id)
+  const isMockData = data?.results?.some(article => article.article_id?.startsWith('mock-'));
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -44,12 +47,12 @@ export function NewsHome() {
 
       {data && <NewsList articles={data.results} />}
 
-      {!import.meta.env.VITE_NEWSDATA_API_KEY && data && (
+      {isMockData && data && (
         <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
           <p className="text-yellow-400 text-sm text-center">
-            Using demo data. Add your{' '}
-            <code className="bg-yellow-500/20 px-1 py-0.5 rounded">VITE_NEWSDATA_API_KEY</code>{' '}
-            to see real news.
+            Using demo data. Configure{' '}
+            <code className="bg-yellow-500/20 px-1 py-0.5 rounded">NEWSDATA_API_KEY</code>{' '}
+            on your Convex dashboard to see real news.
           </p>
         </div>
       )}
